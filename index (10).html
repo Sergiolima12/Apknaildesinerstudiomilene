@@ -16,12 +16,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 
     <style>
-        :root { 
-            --pink-soft: #ffc1cc; 
-            --pink-dark: #d81b60; 
-            --gold: #d4af37; 
-            --white-glass: rgba(255, 255, 255, 0.98); 
-        }
+        :root { --pink-soft: #ffc1cc; --pink-dark: #d81b60; --gold: #d4af37; --white-glass: rgba(255, 255, 255, 0.98); }
         
         * { box-sizing: border-box; font-family: 'Poppins', sans-serif; margin: 0; padding: 0; }
         
@@ -33,11 +28,7 @@
             padding: 15px; min-height: 100vh; 
         }
 
-        @keyframes gradientBG { 
-            0% { background-position: 0% 50%; } 
-            50% { background-position: 100% 50%; } 
-            100% { background-position: 0% 50%; } 
-        }
+        @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
 
         .app-container { 
             width: 100%; max-width: 700px; 
@@ -55,13 +46,13 @@
         .btn-client { background: var(--pink-dark); color: white; }
         .btn-adm { background: #333; color: white; }
 
-        /* Agenda do Cliente */
+        /* Agenda Cliente */
         .calendar-container { max-height: 450px; overflow-y: auto; padding-right: 5px; }
         .day-card { background: #fff; border: 1px solid #ffe4e8; padding: 15px; border-radius: 20px; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
         .day-card strong { color: var(--pink-dark); display: block; margin-bottom: 8px; }
-        .day-card input, .day-card select { width: 100%; margin-bottom: 8px; padding: 10px; border: 1px solid #eee; border-radius: 10px; outline: none; font-size: 14px; }
+        .day-card input, .day-card select { width: 100%; margin-bottom: 8px; padding: 10px; border: 1px solid #eee; border-radius: 10px; outline: none; }
 
-        /* Painel Administrativo */
+        /* Painel ADM */
         #admin-view { display: none; }
         .monthly-summary { background: #333; color: white; padding: 20px; border-radius: 15px; margin: 15px 0; text-align: center; }
         .summary-val { font-size: 24px; font-weight: bold; color: var(--pink-soft); display: block; }
@@ -72,12 +63,12 @@
 
         .btn-pdf { background: #27ae60; color: white; width: 100%; padding: 15px; border: none; border-radius: 12px; margin-top: 10px; cursor: pointer; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 8px; }
         
-        /* Modais de Login/Cadastro */
+        /* Modais */
         .overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 3000; }
         .modal { background: white; padding: 30px; border-radius: 25px; width: 90%; max-width: 350px; text-align: center; }
         .pass-container { position: relative; width: 100%; }
         .modal input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 12px; }
-        .toggle-pass { position: absolute; right: 15px; top: 22px; cursor: pointer; z-index: 5; }
+        .toggle-pass { position: absolute; right: 15px; top: 22px; cursor: pointer; }
 
         #install-btn { background: var(--gold); color: white; border: none; border-radius: 50px; padding: 12px; font-weight: bold; cursor: pointer; margin-top: 10px; width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; }
         
@@ -110,13 +101,13 @@
             <span class="summary-val" id="mesTotal">R$ 0,00</span>
         </div>
 
-        <p style="font-size: 12px; font-weight: bold; margin-bottom: 10px;">Lançamento Financeiro Diário:</p>
+        <p style="font-size: 12px; font-weight: bold; margin-bottom: 10px;">Lançamento Financeiro (30 dias):</p>
         <div class="finance-grid" id="financeGrid"></div>
 
-        <button class="btn-pdf" onclick="gerarPDFVendas()">📥 baixar relatório de vendas (PDF)</button>
+        <button class="btn-pdf" onclick="gerarPDFVendas()">📥 baixar relatório de vendas</button>
 
         <div style="margin-top: 25px;">
-            <strong>Agendamentos Ativos</strong>
+            <strong>Agendamentos Registrados</strong>
             <div style="overflow-x: auto;">
                 <table>
                     <thead>
@@ -127,7 +118,7 @@
             </div>
         </div>
         
-        <button class="btn-pdf" style="background: #2980b9;" onclick="gerarPDFAgenda()">📥 baixar agendamentos (PDF)</button>
+        <button class="btn-pdf" style="background: #2980b9;" onclick="gerarPDFAgenda()">📥 baixar agendamentos</button>
         <button class="btn-adm" style="width: 100%; margin-top: 20px; background: #c0392b;" onclick="logout()">sair do painel</button>
     </section>
 </div>
@@ -147,13 +138,13 @@
 </div>
 
 <script>
-    // Carregamento de dados salvos
-    let agendamentos = JSON.parse(localStorage.getItem('milene_agenda_data')) || [];
-    let vendasMensais = JSON.parse(localStorage.getItem('milene_vendas_data')) || new Array(30).fill(0);
+    // Inicialização de Dados com LocalStorage
+    let agendamentos = JSON.parse(localStorage.getItem('milene_agenda_final')) || [];
+    let vendasMensais = JSON.parse(localStorage.getItem('milene_vendas_final')) || new Array(30).fill(0);
     let usuarios = JSON.parse(localStorage.getItem('milene_users')) || [{email: "naildesinerstudiomilene@gmail.com", pass: "Endrew 04"}];
     let isRegisterMode = false;
 
-    // Inicialização da Interface
+    // Criar Calendário e Grid Financeiro
     function init() {
         const grid = document.getElementById('calendarGrid');
         const fGrid = document.getElementById('financeGrid');
@@ -164,7 +155,6 @@
             let data = new Date(); data.setDate(hoje.getDate() + i);
             let dFmt = data.toLocaleDateString('pt-BR');
             
-            // Grid de Agendamento (Cliente)
             grid.innerHTML += `
                 <div class="day-card">
                     <strong>📅 ${dFmt}</strong>
@@ -177,7 +167,6 @@
                     <button onclick="salvar(${i}, '${dFmt}')" style="width:100%; background:var(--gold); border:none; color:white; padding:10px; border-radius:10px; font-weight:bold;">confirmar</button>
                 </div>`;
 
-            // Grid Financeiro (ADM)
             fGrid.innerHTML += `
                 <div class="day-sale">
                     <span>dia ${i+1}</span>
@@ -187,7 +176,7 @@
         calcTotalVendas();
     }
 
-    // Gerenciamento de Login e Senha
+    // Gerenciamento de Autenticação
     function togglePassword() {
         const p = document.getElementById('pass');
         p.type = p.type === "password" ? "text" : "password";
@@ -209,14 +198,14 @@
             alert("Cadastro realizado!"); switchAuthMode();
         } else {
             const user = usuarios.find(u => u.email === e && u.pass === p);
-            if(user) { showSection('admin'); closeAuthModal(); } else alert("E-mail ou senha incorretos!");
+            if(user) { showSection('admin'); closeAuthModal(); } else alert("Dados incorretos!");
         }
     }
 
-    // Funções de Persistência (Financeiro e Agenda)
+    // Funções Financeiras e Agendamento
     function updateVenda(idx, val) {
         vendasMensais[idx] = parseFloat(val) || 0;
-        localStorage.setItem('milene_vendas_data', JSON.stringify(vendasMensais));
+        localStorage.setItem('milene_vendas_final', JSON.stringify(vendasMensais));
         calcTotalVendas();
     }
 
@@ -228,39 +217,35 @@
     function salvar(idx, data) {
         const n = document.getElementById(`nome-${idx}`).value;
         const h = document.getElementById(`hora-${idx}`).value;
-        if(!n || !h) return alert("Preencha nome e horário!");
+        if(!n || !h) return alert("Preencha nome e hora!");
         agendamentos.push({ id: Date.now(), data, hora: h, nome: n, servico: document.getElementById(`serv-${idx}`).value });
-        localStorage.setItem('milene_agenda_data', JSON.stringify(agendamentos));
-        alert("Agendamento realizado com sucesso!"); init();
+        localStorage.setItem('milene_agenda_final', JSON.stringify(agendamentos));
+        alert("Agendamento salvo!"); init();
     }
 
-    // --- DOWNLOAD DE PDF (FUNCIONAL) ---
+    // Geração de PDF (Download Direto)
     function gerarPDFVendas() {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
-        doc.setFont("helvetica", "bold");
-        doc.text("Relatório Financeiro - Studio Milene", 105, 15, {align: 'center'});
-        
-        const rows = vendasMensais.map((v, i) => [`Dia ${i+1}`, `R$ ${v.toFixed(2).replace('.',',')}`]);
+        doc.text("Relatório de Vendas - Studio Milene", 105, 15, {align: 'center'});
+        const rows = vendasMensais.map((v, i) => [`Dia ${i+1}`, `R$ ${v.toFixed(2)}`]);
         const total = vendasMensais.reduce((a, b) => a + b, 0);
-        rows.push([{content: 'RESULTADO TOTAL FINAL', styles: {fillColor: [51, 51, 51], textColor: 255, fontStyle: 'bold'}}, `R$ ${total.toFixed(2).replace('.',',')}`]);
-
-        doc.autoTable({ head: [['Período', 'Valor Recebido']], body: rows, startY: 25, theme: 'grid' });
+        rows.push([{content: 'TOTAL MENSAL', styles: {fillColor: [51, 51, 51], textColor: 255}}, `R$ ${total.toFixed(2)}`]);
+        doc.autoTable({ head: [['Período', 'Valor']], body: rows, startY: 25 });
         doc.save("vendas_studio_milene.pdf");
     }
 
     function gerarPDFAgenda() {
         const { jsPDF } = window.jspdf;
-        if(agendamentos.length === 0) return alert("Nenhum agendamento registrado!");
+        if(agendamentos.length === 0) return alert("Nenhum agendamento!");
         const doc = new jsPDF();
-        doc.text("Agenda de Atendimentos - Studio Milene", 105, 15, {align: 'center'});
-        
+        doc.text("Agenda - Studio Milene", 105, 15, {align: 'center'});
         const rows = agendamentos.map(a => [a.data, a.hora, a.nome, a.servico || '-']);
         doc.autoTable({ head: [['Data', 'Hora', 'Cliente', 'Serviço']], body: rows, startY: 25 });
         doc.save("agenda_studio_milene.pdf");
     }
 
-    // Navegação entre Telas
+    // Interface e Navegação
     function showSection(sec) {
         document.getElementById('client-view').style.display = sec === 'admin' ? 'none' : 'block';
         document.getElementById('admin-view').style.display = sec === 'admin' ? 'block' : 'none';
@@ -270,21 +255,16 @@
     function renderAdmin() {
         const b = document.getElementById('adminBody'); b.innerHTML = "";
         agendamentos.forEach((a, i) => {
-            b.innerHTML += `<tr><td>${a.data}<br><b>${a.hora}</b></td><td>${a.nome}</td><td><button onclick="excluir(${i})" style="color:red; border:none; background:none; cursor:pointer;">excluir</button></td></tr>`;
+            b.innerHTML += `<tr><td>${a.data}<br><b>${a.hora}</b></td><td>${a.nome}</td><td><button onclick="excluir(${i})" style="color:red; border:none; background:none;">excluir</button></td></tr>`;
         });
     }
 
-    function excluir(i) { 
-        agendamentos.splice(i, 1); 
-        localStorage.setItem('milene_agenda_data', JSON.stringify(agendamentos)); 
-        renderAdmin(); 
-    }
-
+    function excluir(i) { agendamentos.splice(i, 1); localStorage.setItem('milene_agenda_final', JSON.stringify(agendamentos)); renderAdmin(); }
     function openAuthModal() { document.getElementById('authOverlay').style.display = 'flex'; }
     function closeAuthModal() { document.getElementById('authOverlay').style.display = 'none'; }
     function logout() { showSection('client'); }
 
-    // Lógica para Download/Instalação do Aplicativo
+    // Lógica para Download do App no Navegador
     let deferredPrompt;
     window.addEventListener('beforeinstallprompt', (e) => {
         e.preventDefault();
@@ -297,12 +277,12 @@
             deferredPrompt.prompt();
             deferredPrompt = null;
         } else {
-            alert("No Android: Clique nos 3 pontinhos e 'Instalar App'.\nNo iPhone: Clique em 'Compartilhar' e 'Adicionar à tela de início'.");
+            alert("No celular: Clique em 'Compartilhar' e 'Adicionar à tela de início'.\nNo computador: Clique no ícone de instalação na barra de endereços.");
         }
     };
 
-    // Iniciar sistema
     init();
 </script>
 </body>
-</html>
+    </html>
+            
